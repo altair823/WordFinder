@@ -5,7 +5,7 @@ from PyQt5 import uic
 from wikipedia import WikipediaFinder
 from naver_dict import NaverDictFinder
 
-form_class = uic.loadUiType(os.path.abspath("bus_gui.ui"))[0]
+form_class = uic.loadUiType(os.path.abspath("finder_gui.ui"))[0]
 
 
 class FinderGUI(QMainWindow, form_class):
