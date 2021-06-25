@@ -30,18 +30,15 @@ class FinderGUI(QMainWindow, form_class):
 
     def search_word(self):
         a = self.search_bar.text()
-        if a != '':
-            print(a)
-            self.set_word(a)
-            self.search_bar.clear()
-            naver_dict = NaverDictFinder(self.word)
-            wiki = WikipediaFinder(self.word)
-            naver_mean = naver_dict.find()
-            wiki_mean = wiki.find()
-            self.set_naverDict_mean(naver_mean)
-            self.set_wiki_mean(wiki_mean)
-        else:
-            print("eqffqef")
+        print(a)
+        self.set_word(a)
+        self.search_bar.clear()
+        naver_dict = NaverDictFinder(self.word)
+        wiki = WikipediaFinder(self.word)
+        naver_mean = naver_dict.find()
+        wiki_mean = wiki.find()
+        self.set_naverDict_mean(naver_mean)
+        self.set_wiki_mean(wiki_mean)
 
 if __name__ == "__main__" :
     #QApplication : 프로그램을 실행시켜주는 클래스
