@@ -30,7 +30,6 @@ class FinderGUI(QMainWindow, form_class):
 
     def search_word(self):
         a = self.search_bar.text()
-        print(a)
         self.set_word(a)
         self.search_bar.clear()
         naver_dict = NaverDictFinder(self.word)
