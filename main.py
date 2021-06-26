@@ -1,3 +1,5 @@
+import webbrowser
+
 from wikipedia import WikipediaFinder
 from naver_dict import NaverDictFinder
 from gui import FinderGUI

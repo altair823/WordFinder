@@ -1,3 +1,5 @@
+import urllib
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -5,17 +7,18 @@ from bs4 import BeautifulSoup
 class WikipediaFinder:
     def __init__(self, target):
         if target is None:
-            print("3r3r")
             self.target = ''
         else:
-            self.target = target
+            self.target = urllib.parse.quote(target)
+        self.request = None
         self.url = ''
         self.result = None
 
     def find(self):
         try:
-            self.url = requests.get("https://ko.wikipedia.org/wiki/" + self.target, timeout=2)
-            soup = BeautifulSoup(self.url.text, 'lxml')
+            self.url = "https://ko.wikipedia.org/wiki/" + self.target
+            self.request = requests.get(self.url, timeout=2)
+            soup = BeautifulSoup(self.request.text, 'lxml')
             self.result = soup.find_all('p')
         except requests.exceptions.ConnectTimeout:
             return []

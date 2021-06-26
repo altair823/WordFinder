@@ -1,11 +1,20 @@
 import sys
 import os
+import webbrowser
+
 from PyQt5.QtWidgets import *
 from PyQt5 import uic
 from wikipedia import WikipediaFinder
 from naver_dict import NaverDictFinder
+import finder_gui
 
-form_class = uic.loadUiType(os.path.abspath("finder_gui.ui"))[0]
+
+#form_class = uic.loadUiType(os.path.abspath("finder_gui.py"))[0]
+form_class = finder_gui.Ui_WordFinderGUI
+
+
+def go_webpage(url):
+    webbrowser.open(url)
 
 
 class FinderGUI(QMainWindow, form_class):
@@ -13,8 +22,12 @@ class FinderGUI(QMainWindow, form_class):
         super().__init__()
         self.setupUi(self)
         self.word = ''
+        self.naver_url = ''
+        self.wiki_url = ''
         self.search_bar.returnPressed.connect(self.search_word)
         self.search.clicked.connect(self.search_word)
+        self.naver_page.clicked.connect(self.go_naver_page)
+        self.wiki_page.clicked.connect(self.go_wiki_page)
 
     def get_word(self):
         return self.search_bar.text()
@@ -36,18 +49,20 @@ class FinderGUI(QMainWindow, form_class):
         wiki = WikipediaFinder(self.word)
         naver_mean = naver_dict.find()
         wiki_mean = wiki.find()
+        self.naver_url = naver_dict.url
+        self.wiki_url = wiki.url
         self.set_naverDict_mean(naver_mean)
         self.set_wiki_mean(wiki_mean)
 
+    def go_naver_page(self):
+        webbrowser.open(self.naver_url)
+
+    def go_wiki_page(self):
+        webbrowser.open(self.wiki_url)
+
+
 if __name__ == "__main__" :
-    #QApplication : 프로그램을 실행시켜주는 클래스
     app = QApplication(sys.argv)
-
-    #WindowClass의 인스턴스 생성
     myWindow = FinderGUI()
-
-    #프로그램 화면을 보여주는 코드
     myWindow.show()
-
-    #프로그램을 이벤트루프로 진입시키는(프로그램을 작동시키는) 코드
     app.exec_()

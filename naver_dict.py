@@ -1,3 +1,5 @@
+import urllib
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -5,17 +7,18 @@ from bs4 import BeautifulSoup
 class NaverDictFinder:
     def __init__(self, target):
         if target is None:
-            print("3r3r")
             self.target = ''
         else:
-            self.target = target
+            self.target = urllib.parse.quote(target)
+        self.requests = None
         self.url = ''
         self.result = None
 
     def find(self):
         try:
-            self.url = requests.get("https://dict.naver.com/search.dict?dicQuery=" + self.target, timeout=2)
-            soup = BeautifulSoup(self.url.text, 'lxml')
+            self.url = "https://dict.naver.com/search.dict?dicQuery=" + self.target
+            self.requests = requests.get(self.url, timeout=2)
+            soup = BeautifulSoup(self.requests.text, 'lxml')
             #print(soup)
             self.result = soup.find(class_='lst_krdic')
         except requests.exceptions.ConnectTimeout:
