@@ -2,14 +2,15 @@ import ftplib
 from zipfile import ZipFile
 
 
-ftp = ftplib.FTP('61.73.209.90')
-ftp.login()
+class Updater:
+    def __init__(self):
+        self.server = '61.73.209.90'
+        self.filename = 'WordFinder'
 
-ftp.cwd('Released_files')
-ftp.retrlines('LIST')
-ftp.retrbinary('RETR release.zip', open('release.zip', 'wb').write) # README 파일 저장
-
-test_file_name = "release.zip"
-with ZipFile(test_file_name, 'r') as zip:
-    zip.printdir()
-    zip.extractall()
+    def update(self):
+        ftp = ftplib.FTP(self.server)
+        ftp.login()
+        ftp.cwd('Released_files')
+        ftp.retrbinary('RETR ' + self.filename + '.zip', open(self.filename + '.zip', 'wb').write)
+        with ZipFile(self.filename + '.zip', 'r') as zip:
+            zip.extractall()

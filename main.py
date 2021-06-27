@@ -6,9 +6,13 @@ from gui import FinderGUI
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QEventLoop
 import sys
+import updater
 
 
 if __name__ == "__main__" :
+
+    updater.Updater().update()
+
     app = QApplication(sys.argv)
     word_finder = FinderGUI()
     word_finder.show()
