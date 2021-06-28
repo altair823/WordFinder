@@ -1,23 +1,43 @@
 import sys
-import os
 import webbrowser
+from time import sleep
 
+from PyQt5.QtCore import QThread, QCoreApplication
 from PyQt5.QtWidgets import *
-from PyQt5 import uic
-from wikipedia import WikipediaFinder
-from naver_dict import NaverDictFinder
+from scraper.wikipedia import WikipediaFinder
+from scraper.naver_dict import NaverDictFinder
 import finder_gui
+import updater
 
+import update_gui
+updater_gui = update_gui.Ui_update_dialog
 
 #form_class = uic.loadUiType(os.path.abspath("finder_gui.py"))[0]
-form_class = finder_gui.Ui_WordFinderGUI
+finder = finder_gui.Ui_WordFinderGUI
 
 
 def go_webpage(url):
     webbrowser.open(url)
 
+class Updater_GUI(QDialog, updater_gui):
+    def __init__(self, parent):
+        super(Updater_GUI, self).__init__(parent)
+        self.setupUi(self)
+        self.show()
+        self.update_thread = QThread()
+        self.update_worker = updater.Updater('WordFinder')
+        self.update_worker.moveToThread(self.update_thread)
+        self.update_thread.started.connect(self.update_worker.update)
+        self.update_worker.finished.connect(self.update_thread.quit)
+        self.update_worker.finished.connect(self.update_worker.deleteLater)
+        self.update_thread.finished.connect(self.update_thread.deleteLater)
+        self.update_thread.start()
 
-class FinderGUI(QMainWindow, form_class):
+    def closeEvent(self, QCloseEvent):
+        QCloseEvent.accept()
+
+
+class FinderGUI(QMainWindow, finder):
     def __init__(self) :
         super().__init__()
         self.setupUi(self)
@@ -28,6 +48,7 @@ class FinderGUI(QMainWindow, form_class):
         self.search.clicked.connect(self.search_word)
         self.naver_page.clicked.connect(self.go_naver_page)
         self.wiki_page.clicked.connect(self.go_wiki_page)
+        self.update_btn.clicked.connect(self.update)
 
     def get_word(self):
         return self.search_bar.text()
@@ -60,6 +81,9 @@ class FinderGUI(QMainWindow, form_class):
     def go_wiki_page(self):
         webbrowser.open(self.wiki_url)
 
+    def update(self):
+        updater_g = Updater_GUI(self)
+        updater_g.show()
 
 if __name__ == "__main__" :
     app = QApplication(sys.argv)

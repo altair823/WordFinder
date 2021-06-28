@@ -12,7 +12,7 @@ class Ui_WordFinderGUI(object):
     def setupUi(self, WordFinderGUI):
         WordFinderGUI.setObjectName("WordFinderGUI")
         WordFinderGUI.resize(896, 625)
-        WordFinderGUI.setStyleSheet("background-color: rgb(87, 82, 162);")
+        WordFinderGUI.setStyleSheet("background-color: rgb(100, 98, 100);")
         self.verticalLayoutWidget = QtWidgets.QWidget(WordFinderGUI)
         self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 110, 171, 121))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
@@ -105,6 +105,10 @@ class Ui_WordFinderGUI(object):
         self.wiki_label.setAlignment(QtCore.Qt.AlignCenter)
         self.wiki_label.setObjectName("wiki_label")
         self.gridLayout_2.addWidget(self.wiki_label, 0, 0, 1, 1)
+        self.update_btn = QtWidgets.QPushButton(WordFinderGUI)
+        self.update_btn.setGeometry(QtCore.QRect(40, 440, 113, 32))
+        self.update_btn.setStyleSheet("background-color: rgb(235, 232, 237);")
+        self.update_btn.setObjectName("update_btn")
 
         self.retranslateUi(WordFinderGUI)
         QtCore.QMetaObject.connectSlotsByName(WordFinderGUI)
@@ -117,4 +121,5 @@ class Ui_WordFinderGUI(object):
         self.naver_label.setText(_translate("WordFinderGUI", "네이버 사전"))
         self.wiki_page.setText(_translate("WordFinderGUI", "페이지 방문"))
         self.wiki_label.setText(_translate("WordFinderGUI", "위키백과"))
+        self.update_btn.setText(_translate("WordFinderGUI", "업데이트"))
 
