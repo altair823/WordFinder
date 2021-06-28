@@ -103,6 +103,7 @@ class Updater(QObject):
             move_old_and_new(self.filename)
             start_new(self.filename)
             self.exit_flag = True
+            exit(0)
 
     def is_finished(self):
         return self.exit_flag
