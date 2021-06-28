@@ -1,15 +1,15 @@
 import sys
 import webbrowser
-from time import sleep
 
-from PyQt5.QtCore import QThread, QCoreApplication
+from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import *
 from scraper.wikipedia import WikipediaFinder
 from scraper.naver_dict import NaverDictFinder
-import finder_gui
-import updater
+from gui import finder_gui, update_gui
+from core import updater
+from core import update_checker
+from core.declaration import *
 
-import update_gui
 updater_gui = update_gui.Ui_update_dialog
 
 #form_class = uic.loadUiType(os.path.abspath("finder_gui.py"))[0]
@@ -33,8 +33,6 @@ class Updater_GUI(QDialog, updater_gui):
         self.update_thread.finished.connect(self.update_thread.deleteLater)
         self.update_thread.start()
 
-    def closeEvent(self, QCloseEvent):
-        QCloseEvent.accept()
 
 
 class FinderGUI(QMainWindow, finder):
@@ -82,6 +80,7 @@ class FinderGUI(QMainWindow, finder):
         webbrowser.open(self.wiki_url)
 
     def update(self):
+        update_checker.UpdateChecker(RELEASED_FILE_DIR)
         updater_g = Updater_GUI(self)
         updater_g.show()
 

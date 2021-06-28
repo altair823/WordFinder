@@ -1,4 +1,4 @@
-from gui import FinderGUI
+from gui.total_gui import FinderGUI
 from PyQt5.QtWidgets import QApplication
 import sys
 

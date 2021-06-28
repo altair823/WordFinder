@@ -18,7 +18,7 @@ class Ui_update_dialog(object):
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.update_label = QtWidgets.QLabel(update_dialog)
-        self.update_label.setMaximumSize(QtCore.QSize(16777215, 30))
+        self.update_label.setMaximumSize(QtCore.QSize(16777215, 100))
         font = QtGui.QFont()
         font.setPointSize(16)
         self.update_label.setFont(font)
@@ -26,20 +26,6 @@ class Ui_update_dialog(object):
         self.update_label.setAlignment(QtCore.Qt.AlignCenter)
         self.update_label.setObjectName("update_label")
         self.verticalLayout.addWidget(self.update_label)
-        self.update_progress_bar = QtWidgets.QProgressBar(update_dialog)
-        self.update_progress_bar.setMaximumSize(QtCore.QSize(16777215, 16777215))
-        font = QtGui.QFont()
-        font.setPointSize(17)
-        font.setBold(False)
-        font.setWeight(50)
-        self.update_progress_bar.setFont(font)
-        self.update_progress_bar.setStyleSheet("background-color: rgb(255, 255, 255);\n"
-"border-color: rgb(255, 255, 255);")
-        self.update_progress_bar.setProperty("value", 24)
-        self.update_progress_bar.setAlignment(QtCore.Qt.AlignCenter)
-        self.update_progress_bar.setTextVisible(True)
-        self.update_progress_bar.setObjectName("update_progress_bar")
-        self.verticalLayout.addWidget(self.update_progress_bar)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
 
         self.retranslateUi(update_dialog)
@@ -48,5 +34,5 @@ class Ui_update_dialog(object):
     def retranslateUi(self, update_dialog):
         _translate = QtCore.QCoreApplication.translate
         update_dialog.setWindowTitle(_translate("update_dialog", "Dialog"))
-        self.update_label.setText(_translate("update_dialog", "업데이트 중..."))
+        self.update_label.setText(_translate("update_dialog", "<html><head/><body><p>업데이트 중입니다. </p><p>잠시 후 다시 시작됩니다.</p></body></html>"))
 
