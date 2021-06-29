@@ -8,7 +8,8 @@ CURRENT_VERSION = '0.4'
 RELEASED_FILE_DIR = 'Released_files'  # in ftp server.
 
 _current_main_dir = os.getcwd()
-temp_update_dir = os.path.abspath(os.path.join(_current_main_dir, 'tmp_update'))
+temp_update_dir = os.path.abspath(os.path.join(os.getcwd(), 'tmp_update'))
+print(temp_update_dir)
 WORDFINDER_FTP_SERVER = '61.73.209.90'
 
 

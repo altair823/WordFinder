@@ -23,6 +23,7 @@ class Updater_GUI(QDialog, updater_gui):
     def __init__(self, parent):
         super(Updater_GUI, self).__init__(parent)
         self.setupUi(self)
+        self.setWindowTitle('Update')
         self.show()
         self.update_thread = QThread()
         self.update_worker = updater.Updater('WordFinder')
@@ -40,6 +41,7 @@ class FinderGUI(QMainWindow, finder):
     def __init__(self) :
         super().__init__()
         self.setupUi(self)
+        self.setWindowTitle('WordFinder')
         self.word = ''
         self.naver_url = ''
         self.wiki_url = ''

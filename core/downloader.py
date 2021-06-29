@@ -56,6 +56,7 @@ class Downloader:
             # Download files to temp_dir.
             file = open(os.path.join(temp_update_dir, self.filename.zip), 'wb')
             self.ftp.retrbinary('RETR ' + self.filename.zip, file_write)
+            file.close()
         except Exception as e:
             print('Failed to download from ftp server.', e)
             print('Abort program')

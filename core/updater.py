@@ -37,16 +37,14 @@ class Updater(QObject):
                 sleep(1)
             if res['filename'] is None:
                 raise Exception('Failed to download')
+            print(os.path.join(temp_update_dir, self.filename.zip))
 
             with ZipFile(os.path.join(temp_update_dir, self.filename.zip)) as zip:
                 zip.extractall(temp_update_dir)
             os.remove(os.path.join(temp_update_dir, self.filename.zip))
 
-            move_old_and_new(self.filename)
             try:
-                rm_update_dir()
-                start_new(self.filename)
-                self.finished.emit()  # Never execute.
+                move_old_start_new(self.filename)
             except Exception:
                 print('플랫폼 이슈!')
                 rm_update_dir()
@@ -57,7 +55,8 @@ class Updater(QObject):
 # Move the old file to temp_update_dir
 # And move the new downloaded files to current directory.
 # If anything exist in temp_update_dir, they will be moved to current dir.
-def move_old_and_new(filename):
+# All tasks are done, start new .exe.
+def move_old_start_new(filename):
     current_path = os.path.basename(filename.exe)
     new_files = os.listdir(temp_update_dir)
     name_old = os.path.join(temp_update_dir, '{}_old'.format(current_path))
@@ -70,14 +69,11 @@ def move_old_and_new(filename):
             shutil.move(os.path.join(temp_update_dir, file), file)
     os.rename(filename.exe, current_path)
 
-def start_new(filename):
-    # Execute file if the os is Windows.
     if IS_THIS_TEST is False:
         if platform.system() == 'Windows':
-            os.startfile(os.path.basename(filename.exe))
+            os.startfile(filename.exe)
             exit(0)
         else:
             raise Exception("지원되지 않는 플랫폼입니다")
     else:
         print('테스트 환경입니다.')
-
