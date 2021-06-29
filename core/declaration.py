@@ -1,3 +1,5 @@
+# This file violate the Dependency Inversion Principle,
+# because other modules depend on this module.
 
 
 # Temporary directory that will contains downloaded files which is replaced the original files.
@@ -8,8 +10,7 @@ CURRENT_VERSION = '0.4'
 RELEASED_FILE_DIR = 'Released_files'  # in ftp server.
 
 _current_main_dir = os.getcwd()
-temp_update_dir = os.path.abspath(os.path.join(os.getcwd(), 'tmp_update'))
-print(temp_update_dir)
+TEMP_UPDATE_DIR = os.path.abspath(os.path.join(os.getcwd(), 'tmp_update'))
 WORDFINDER_FTP_SERVER = '61.73.209.90'
 
 
@@ -28,5 +29,5 @@ def is_this_test():
                 return True
         return False
 
-
 IS_THIS_TEST = is_this_test()
+

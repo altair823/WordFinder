@@ -3,8 +3,7 @@ import webbrowser
 
 from PyQt5.QtCore import QThread
 from PyQt5.QtWidgets import *
-from scraper.wikipedia import WikipediaFinder
-from scraper.naver_dict import NaverDictFinder
+from presenter import naver_presenter, wiki_presenter
 from gui import finder_gui, update_gui
 from core import updater
 from core import update_checker
@@ -27,6 +26,9 @@ class Updater_GUI(QDialog, updater_gui):
         self.show()
         self.update_thread = QThread()
         self.update_worker = updater.Updater('WordFinder')
+        self.update_worker.set_sever(WORDFINDER_FTP_SERVER)
+        self.update_worker.set_dir(TEMP_UPDATE_DIR)
+
         self.update_worker.moveToThread(self.update_thread)
         self.update_thread.started.connect(self.update_worker.update)
         self.update_worker.finished.connect(self.update_thread.quit)
@@ -34,7 +36,6 @@ class Updater_GUI(QDialog, updater_gui):
         self.update_thread.finished.connect(self.update_thread.deleteLater)
         self.update_thread.finished.connect(self.close)
         self.update_thread.start()
-
 
 
 class FinderGUI(QMainWindow, finder):
@@ -64,15 +65,19 @@ class FinderGUI(QMainWindow, finder):
         self.wiki_search_result.setText(mean_str)
 
     def search_word(self):
-        a = self.search_bar.text()
-        self.set_word(a)
+        target = self.search_bar.text()
+        self.set_word(target)
         self.search_bar.clear()
-        naver_dict = NaverDictFinder(self.word)
-        wiki = WikipediaFinder(self.word)
-        naver_mean = naver_dict.find()
-        wiki_mean = wiki.find()
-        self.naver_url = naver_dict.url
-        self.wiki_url = wiki.url
+
+        naver_pre = naver_presenter.NaverPresenter(target)
+        wiki_pre = wiki_presenter.WikiPresenter(target)
+
+        naver_mean = naver_pre.get_mean()
+        wiki_mean = wiki_pre.get_mean()
+
+        self.naver_url = naver_pre.url
+        self.wiki_url = wiki_pre.url
+
         self.set_naverDict_mean(naver_mean)
         self.set_wiki_mean(wiki_mean)
 
