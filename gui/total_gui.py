@@ -31,6 +31,7 @@ class Updater_GUI(QDialog, updater_gui):
         self.update_worker.finished.connect(self.update_thread.quit)
         self.update_worker.finished.connect(self.update_worker.deleteLater)
         self.update_thread.finished.connect(self.update_thread.deleteLater)
+        self.update_thread.finished.connect(self.close)
         self.update_thread.start()
 
 
@@ -80,7 +81,9 @@ class FinderGUI(QMainWindow, finder):
         webbrowser.open(self.wiki_url)
 
     def update(self):
-        update_checker.UpdateChecker(RELEASED_FILE_DIR)
+        if update_checker.UpdateChecker(RELEASED_FILE_DIR).check() is False:
+            print('don\'t needed!')
+            return
         updater_g = Updater_GUI(self)
         updater_g.show()
 

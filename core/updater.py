@@ -1,11 +1,12 @@
+import os
 import shutil
 import platform
 from time import sleep
 from zipfile import ZipFile
 from PyQt5.QtCore import QObject, pyqtSignal
 
-from core.declaration import WORDFINDER_FTP_SERVER
-from core.downloader import Downloader
+from core.declaration import WORDFINDER_FTP_SERVER, temp_update_dir, IS_THIS_TEST
+from core.downloader import Downloader, rm_update_dir
 from file_extension import FileName
 
 
@@ -27,8 +28,7 @@ class Updater(QObject):
             self.downloader = Downloader(res)
             self.downloader.setServer(self.server)
             self.downloader.setFilename(self.filename)
-            #self.d.setDaemon(True)
-            self.downloader.run()
+            self.downloader.download()
         # If update sequence cannot be executed,
         except Exception as e:
             raise
@@ -44,9 +44,13 @@ class Updater(QObject):
 
             move_old_and_new(self.filename)
             try:
+                rm_update_dir()
                 start_new(self.filename)
+                self.finished.emit()  # Never execute.
             except Exception:
                 print('플랫폼 이슈!')
+                rm_update_dir()
+                self.finished.emit()
                 exit(1)
 
 
@@ -68,9 +72,12 @@ def move_old_and_new(filename):
 
 def start_new(filename):
     # Execute file if the os is Windows.
-    if platform.system() == 'Windows':
-        os.startfile(os.path.basename(filename.exe))
-        exit(0)
-    #else:
-    #    raise Exception("지원되지 않는 플랫폼입니다")
+    if IS_THIS_TEST is False:
+        if platform.system() == 'Windows':
+            os.startfile(os.path.basename(filename.exe))
+            exit(0)
+        else:
+            raise Exception("지원되지 않는 플랫폼입니다")
+    else:
+        print('테스트 환경입니다.')
 

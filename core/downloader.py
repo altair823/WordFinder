@@ -7,6 +7,18 @@ from core.declaration import temp_update_dir
 from file_extension import FileName
 
 
+# Remove if there is update_dir existing.
+def rm_update_dir():
+    if os.path.isdir(temp_update_dir) is True:
+        shutil.rmtree(temp_update_dir)
+
+# If update_dir exist, delete it and make a new one.
+def mk_update_dir():
+    if os.path.isdir(temp_update_dir) is True:
+        shutil.rmtree(temp_update_dir)
+    os.makedirs(temp_update_dir)
+
+
 # Downloader that download updating files by ftp protocol.
 class Downloader:
     # Argument named 'is_complete' is the flag representing the downloading sequence complete.
@@ -29,12 +41,8 @@ class Downloader:
         else:
             raise Exception('wrong filename type')
 
-    # For multithreading.
-    def run(self):
-        # If temp_dir exist, delete it and make a new one.
-        if os.path.isdir(temp_update_dir) is True:
-            shutil.rmtree(temp_update_dir)
-        os.makedirs(temp_update_dir)
+    def download(self):
+        mk_update_dir()
 
         def file_write(data):
             file.write(data)
