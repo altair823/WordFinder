@@ -42,7 +42,7 @@ class FinderGUI(QMainWindow, finder):
     def __init__(self) :
         super().__init__()
         self.setupUi(self)
-        self.setWindowTitle('Word Finder!@')
+        self.setWindowTitle('Word Finder')
         self.word = ''
         self.naver_url = ''
         self.wiki_url = ''
