@@ -5,7 +5,11 @@ class WordPresenter(metaclass=ABCMeta):
     target = ''
     url = ''
     @abstractmethod
-    def get_mean(self):
+    def present_mean(self, mean):
+        pass
+
+    @abstractmethod
+    def present_url(self, url):
         pass
 
 

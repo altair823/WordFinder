@@ -9,9 +9,10 @@ from core import updater
 from core import update_checker
 from core.declaration import *
 
-updater_gui = update_gui.Ui_update_dialog
+from input_interface.input_target import WordInput
+from scraper import naver_dict, wikipedia
 
-#form_class = uic.loadUiType(os.path.abspath("finder_gui.py"))[0]
+updater_gui = update_gui.Ui_update_dialog
 finder = finder_gui.Ui_WordFinderGUI
 
 
@@ -69,14 +70,17 @@ class FinderGUI(QMainWindow, finder):
         self.set_word(target)
         self.search_bar.clear()
 
-        naver_pre = naver_presenter.NaverPresenter(target)
-        wiki_pre = wiki_presenter.WikiPresenter(target)
+        naver_finder = WordInput(target).get_naver_finder()
+        wiki_finder = WordInput(target).get_wiki_finder()
 
-        naver_mean = naver_pre.get_mean()
-        wiki_mean = wiki_pre.get_mean()
+        naver_pre = naver_presenter.NaverPresenter()
+        wiki_pre = wiki_presenter.WikiPresenter()
 
-        self.naver_url = naver_pre.url
-        self.wiki_url = wiki_pre.url
+        naver_mean = naver_pre.present_mean(naver_finder.find())
+        wiki_mean = wiki_pre.present_mean(wiki_finder.find())
+
+        self.naver_url = naver_pre.present_url(naver_finder.url)
+        self.wiki_url = wiki_pre.present_url(wiki_finder.url)
 
         self.set_naverDict_mean(naver_mean)
         self.set_wiki_mean(wiki_mean)
