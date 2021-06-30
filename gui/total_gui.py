@@ -44,6 +44,7 @@ class FinderGUI(QMainWindow, finder):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle('Word Finder')
+        self.version_indicator.setText('version ' + CURRENT_VERSION)
         self.word = ''
         self.naver_url = ''
         self.wiki_url = ''

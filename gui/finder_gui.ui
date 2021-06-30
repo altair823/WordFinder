@@ -22,7 +22,7 @@
      <x>10</x>
      <y>110</y>
      <width>171</width>
-     <height>51</height>
+     <height>52</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -75,8 +75,8 @@ border-color: rgb(255, 255, 255);</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>669</width>
-         <height>258</height>
+         <width>664</width>
+         <height>252</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -172,8 +172,8 @@ border-color: rgb(255, 255, 255);</string>
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>669</width>
-         <height>278</height>
+         <width>664</width>
+         <height>272</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -257,6 +257,22 @@ border-color: rgb(255, 255, 255);</string>
    </property>
    <property name="text">
     <string>업데이트</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="version_indicator">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>580</y>
+     <width>121</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">color: rgb(255, 255, 255);</string>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
    </property>
   </widget>
  </widget>
