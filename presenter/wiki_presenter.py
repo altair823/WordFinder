@@ -20,3 +20,6 @@ class WikiPresenter(presenter.word_presenter_interface.WordPresenter):
 
     def present_url(self, url):
         return url
+
+    def web_html_test(self, html):
+        return html
