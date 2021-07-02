@@ -2,14 +2,24 @@ import os
 import shutil
 import platform
 from zipfile import ZipFile
-from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal, QThread
 
 from core.declaration import IS_THIS_TEST
 from core.downloader import Downloader, rm_update_dir
 from core.file_extension import FileName
 
 
-class Updater(QObject):
+class update_worker(QThread):
+    def __init__(self, filename_without_extension):
+        super(update_worker, self).__init__()
+        self.filename_without_extension = filename_without_extension
+    def run(self):
+        worker = Updater(self.filename_without_extension)
+
+
+
+
+class Updater(QThread):
     finished = pyqtSignal()
     progress = pyqtSignal(int)
 
@@ -45,11 +55,9 @@ class Updater(QObject):
 
             try:
                 self.move_old_start_new(self.filename)
-                self.finished.emit()  # in released version, this line is never reached. Just for the test.
             except Exception:
                 print('플랫폼 이슈!')
                 rm_update_dir()
-                self.finished.emit()
                 exit(1)
 
     # Move the old file to temp_update_dir
@@ -77,3 +85,7 @@ class Updater(QObject):
                 raise Exception("지원되지 않는 플랫폼입니다")
         else:
             print('테스트 환경입니다.')
+
+    def run(self):
+        self.update()
+        self.finished.emit()

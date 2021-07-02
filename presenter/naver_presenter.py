@@ -4,6 +4,8 @@ import presenter.word_presenter_interface
 from scraper.naver_dict import NaverDictFinder
 
 
+
+
 class NaverPresenter(presenter.word_presenter_interface.WordPresenter):
 
     def present_mean(self, mean):

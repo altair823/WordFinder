@@ -1,9 +1,8 @@
 import urllib
 import requests
-import scraper.dict_interface
 
 
-class WikipediaFinder(scraper.dict_interface.DictInferface):
+class WikipediaFinder():
     def __init__(self, target):
         if target is None:
             self.target = ''
@@ -12,12 +11,9 @@ class WikipediaFinder(scraper.dict_interface.DictInferface):
         self.request = None
         self.url = ''
         self.result = None
-
-    def find(self):
         try:
             self.url = "https://ko.wikipedia.org/wiki/" + self.target
             self.request = requests.get(self.url, timeout=2)
         except requests.exceptions.ConnectTimeout:
-            return []
-        else:
-            return self.request.text
+            self.url = ''
+            self.result = ''

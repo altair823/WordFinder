@@ -8,7 +8,7 @@ class WikiPresenter(presenter.word_presenter_interface.WordPresenter):
 
     def present_mean(self, mean):
         soup = BeautifulSoup(mean, 'lxml')
-        result = soup.find_all('p')
+        result = soup.find_all(['p'])
 
         if result is None:
             return ''

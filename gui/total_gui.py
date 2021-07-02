@@ -1,7 +1,7 @@
 import sys
 import webbrowser
 
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, QObject, QThreadPool, pyqtSignal, pyqtSlot, QRunnable
 from PyQt5.QtWidgets import *
 from presenter import naver_presenter, wiki_presenter
 from gui import finder_gui, update_gui
@@ -25,18 +25,43 @@ class Updater_GUI(QDialog, updater_gui):
         self.setupUi(self)
         self.setWindowTitle('Update')
         self.show()
-        self.update_thread = QThread()
         self.update_worker = updater.Updater('WordFinder')
         self.update_worker.set_sever(WORDFINDER_FTP_SERVER)
         self.update_worker.set_dir(TEMP_UPDATE_DIR)
 
-        self.update_worker.moveToThread(self.update_thread)
-        self.update_thread.started.connect(self.update_worker.update)
-        self.update_worker.finished.connect(self.update_thread.quit)
-        self.update_worker.finished.connect(self.update_worker.deleteLater)
-        self.update_thread.finished.connect(self.update_thread.deleteLater)
-        self.update_thread.finished.connect(self.close)
-        self.update_thread.start()
+        self.update_worker.start()
+        self.update_worker.finished.connect(self.close)
+
+class WorkerSignals(QObject):
+    result = pyqtSignal(str)
+    finished = pyqtSignal()
+
+class NaverThreadFinder(QRunnable):
+    def __init__(self, target):
+        super().__init__()
+        self.target = target
+        self.signals = WorkerSignals()
+
+    @pyqtSlot()
+    def run(self):
+        navar_pre = naver_presenter.NaverPresenter()
+        navar_result = navar_pre.present_mean(WordInput(self.target).get_naver_finder().request.text)
+        self.signals.result.emit(navar_result)
+        self.signals.finished.emit()
+
+
+class WikiThreadFinder(QRunnable):
+    def __init__(self, target):
+        super().__init__()
+        self.target = target
+        self.signals = WorkerSignals()
+
+    @pyqtSlot()
+    def run(self):
+        wiki_pre = wiki_presenter.WikiPresenter()
+        wiki_result = wiki_pre.present_mean(WordInput(self.target).get_wiki_finder().request.text)
+        self.signals.result.emit(wiki_result)
+        self.signals.finished.emit()
 
 
 class FinderGUI(QMainWindow, finder):
@@ -53,6 +78,8 @@ class FinderGUI(QMainWindow, finder):
         self.naver_page.clicked.connect(self.go_naver_page)
         self.wiki_page.clicked.connect(self.go_wiki_page)
         self.update_btn.clicked.connect(self.update)
+
+        self.threadpool = QThreadPool()
 
     def get_word(self):
         return self.search_bar.text()
@@ -71,20 +98,14 @@ class FinderGUI(QMainWindow, finder):
         self.set_word(target)
         self.search_bar.clear()
 
-        naver_finder = WordInput(target).get_naver_finder()
-        wiki_finder = WordInput(target).get_wiki_finder()
+        naver_finder = NaverThreadFinder(target)
+        naver_finder.signals.result.connect(self.set_naverDict_mean)
+        self.threadpool.start(naver_finder)
 
-        naver_pre = naver_presenter.NaverPresenter()
-        wiki_pre = wiki_presenter.WikiPresenter()
+        wiki_finder = WikiThreadFinder(target)
+        naver_finder.signals.result.connect(self.set_wiki_mean)
+        self.threadpool.start(wiki_finder)
 
-        naver_mean = naver_pre.present_mean(naver_finder.find())
-        wiki_mean = wiki_pre.present_mean(wiki_finder.find())
-
-        self.naver_url = naver_pre.present_url(naver_finder.url)
-        self.wiki_url = wiki_pre.present_url(wiki_finder.url)
-
-        self.set_naverDict_mean(naver_mean)
-        self.set_wiki_mean(wiki_mean)
 
     def go_naver_page(self):
         webbrowser.open(self.naver_url)
