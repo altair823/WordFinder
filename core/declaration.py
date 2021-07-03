@@ -6,7 +6,7 @@
 # And the old files will moving this temp_dir.
 import os
 
-CURRENT_VERSION = '0.4.5'
+CURRENT_VERSION = '0.4.6'
 RELEASED_FILE_DIR = 'Released_files'  # in ftp server.
 
 _current_main_dir = os.getcwd()
