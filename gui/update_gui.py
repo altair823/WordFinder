@@ -27,7 +27,7 @@ class Ui_update_dialog(object):
         self.update_label.setObjectName("update_label")
         self.verticalLayout.addWidget(self.update_label)
         self.progress_bar = QtWidgets.QProgressBar(update_dialog)
-        self.progress_bar.setProperty("value", 24)
+        self.progress_bar.setProperty("value", 0)
         self.progress_bar.setObjectName("progress_bar")
         self.verticalLayout.addWidget(self.progress_bar)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
