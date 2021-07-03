@@ -1,10 +1,11 @@
 import sys
 import webbrowser
+from time import sleep
 
 from PyQt5.QtCore import QThread, QObject, QThreadPool, pyqtSignal, pyqtSlot, QRunnable
 from PyQt5.QtWidgets import *
 from presenter import naver_presenter, wiki_presenter
-from gui import finder_gui, update_gui
+from gui import main_window, update_gui
 from core import updater
 from core import update_checker
 from core.declaration import *
@@ -13,27 +14,63 @@ from input_interface.input_target import WordInput
 from scraper import naver_dict, wikipedia
 
 updater_gui = update_gui.Ui_update_dialog
-finder = finder_gui.Ui_WordFinderGUI
+finder = main_window.Ui_MainWindow
 
 
-def go_webpage(url):
-    webbrowser.open(url)
+class check_signal(QObject):
+    progress = pyqtSignal(int)
 
 class Updater_GUI(QDialog, updater_gui):
-    def __init__(self, parent):
+    def __init__(self, parent, filename):
         super(Updater_GUI, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle('Update')
         self.show()
-        self.update_worker = updater.Updater('WordFinder')
+        self.filename = filename
+        self.total_size = 0
+        self.threadpool = QThreadPool()
+        self.update_worker = updater.Updater(self.filename)
         self.update_worker.set_sever(WORDFINDER_FTP_SERVER)
         self.update_worker.set_dir(TEMP_UPDATE_DIR)
+        self.threadpool.start(self.update_worker)
 
-        self.update_worker.start()
-        self.update_worker.finished.connect(self.close)
+        self.update_worker.signal.total_size.connect(self.set_total_size)
+        self.update_worker.signal.finished.connect(self.close)
+
+    def set_total_size(self, size):
+        self.total_size = size
+        if self.total_size == 0:
+            return
+
+        class _update_checker(QRunnable):
+            def __init__(self, filename, total_size):
+                super(_update_checker, self).__init__()
+                self.signals = check_signal()
+                self.filename = filename
+                self.total_size = total_size
+
+            @pyqtSlot()
+            def run(self):
+                current_size = 0
+                total = self.total_size
+                while (current_size <= total):
+                    if os.path.isfile(os.path.join(TEMP_UPDATE_DIR, self.filename + '.zip')):
+                        current_size = os.path.getsize(os.path.join(TEMP_UPDATE_DIR, self.filename + '.zip'))
+                    else:
+                        return
+                    self.signals.progress.emit((int(current_size) / total) * 100)
+                    sleep(1)
+
+        self.progress_checker = _update_checker(self.filename, self.total_size)
+        self.threadpool.start(self.progress_checker)
+        self.progress_checker.signals.progress.connect(self.progress_check)
+
+    def progress_check(self, progress):
+        self.progress_bar.setValue(progress)
+
 
 class WorkerSignals(QObject):
-    result = pyqtSignal(str)
+    result = pyqtSignal(dict)
     finished = pyqtSignal()
 
 class NaverThreadFinder(QRunnable):
@@ -44,10 +81,17 @@ class NaverThreadFinder(QRunnable):
 
     @pyqtSlot()
     def run(self):
-        navar_pre = naver_presenter.NaverPresenter()
-        navar_result = navar_pre.present_mean(WordInput(self.target).get_naver_finder().request.text)
-        self.signals.result.emit(navar_result)
-        self.signals.finished.emit()
+        if self.target == '':
+            self.signals.result.emit({'url': '', 'text': ''})
+            self.signals.finished.emit()
+        else:
+            navar_pre = naver_presenter.NaverPresenter()
+            naver_finder = WordInput(self.target).get_naver_finder()
+            naver_result = dict()
+            naver_result['url'] = naver_finder.url
+            naver_result['text'] = navar_pre.present_mean(naver_finder.request.text)
+            self.signals.result.emit(naver_result)
+            self.signals.finished.emit()
 
 
 class WikiThreadFinder(QRunnable):
@@ -58,10 +102,17 @@ class WikiThreadFinder(QRunnable):
 
     @pyqtSlot()
     def run(self):
-        wiki_pre = wiki_presenter.WikiPresenter()
-        wiki_result = wiki_pre.present_mean(WordInput(self.target).get_wiki_finder().request.text)
-        self.signals.result.emit(wiki_result)
-        self.signals.finished.emit()
+        if self.target == '':
+            self.signals.result.emit({'url': '', 'text': ''})
+            self.signals.finished.emit()
+        else:
+            wiki_pre = wiki_presenter.WikiPresenter()
+            wiki_finder = WordInput(self.target).get_wiki_finder()
+            wiki_result = dict()
+            wiki_result['url'] = wiki_finder.url
+            wiki_result['text'] = wiki_pre.present_mean(wiki_finder.request.text)
+            self.signals.result.emit(wiki_result)
+            self.signals.finished.emit()
 
 
 class FinderGUI(QMainWindow, finder):
@@ -69,15 +120,16 @@ class FinderGUI(QMainWindow, finder):
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle('Word Finder')
-        self.version_indicator.setText('version ' + CURRENT_VERSION)
+
+        self.menu_info_update.triggered.connect(self.update)
+
         self.word = ''
         self.naver_url = ''
         self.wiki_url = ''
         self.search_bar.returnPressed.connect(self.search_word)
-        self.search.clicked.connect(self.search_word)
-        self.naver_page.clicked.connect(self.go_naver_page)
-        self.wiki_page.clicked.connect(self.go_wiki_page)
-        self.update_btn.clicked.connect(self.update)
+        self.search_button.clicked.connect(self.search_word)
+        self.naver_gopage.clicked.connect(self.go_naver_page)
+        self.wiki_gopage.clicked.connect(self.go_wiki_page)
 
         self.threadpool = QThreadPool()
 
@@ -87,11 +139,19 @@ class FinderGUI(QMainWindow, finder):
     def set_word(self, string):
         self.word = string
 
-    def set_naverDict_mean(self, mean_str):
-        self.naver_search_result.setText(mean_str)
+    def set_naverDict_mean(self, result_dict):
+        for key in result_dict.keys():
+            if key == 'url':
+                self.naver_url = result_dict[key]
+            if key == 'text':
+                self.naver_result.setText(result_dict[key])
 
-    def set_wiki_mean(self, mean_str):
-        self.wiki_search_result.setText(mean_str)
+    def set_wiki_mean(self, result_dict):
+        for key in result_dict.keys():
+            if key == 'url':
+                self.wiki_url = result_dict[key]
+            if key == 'text':
+                self.wiki_result.setText(result_dict[key])
 
     def search_word(self):
         target = self.search_bar.text()
@@ -103,7 +163,7 @@ class FinderGUI(QMainWindow, finder):
         self.threadpool.start(naver_finder)
 
         wiki_finder = WikiThreadFinder(target)
-        naver_finder.signals.result.connect(self.set_wiki_mean)
+        wiki_finder.signals.result.connect(self.set_wiki_mean)
         self.threadpool.start(wiki_finder)
 
 
@@ -117,7 +177,7 @@ class FinderGUI(QMainWindow, finder):
         if update_checker.UpdateChecker(RELEASED_FILE_DIR).check() is False:
             print('don\'t needed!')
             return
-        updater_g = Updater_GUI(self)
+        updater_g = Updater_GUI(self, 'WordFinder')
         updater_g.show()
 
 if __name__ == "__main__" :

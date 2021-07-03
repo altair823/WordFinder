@@ -2,7 +2,7 @@ import urllib
 import requests
 
 
-class NaverDictFinder():
+class NaverDictFinder:
     def __init__(self, target):
         if target is None:
             self.target = ''

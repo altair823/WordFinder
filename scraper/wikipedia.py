@@ -2,7 +2,7 @@ import urllib
 import requests
 
 
-class WikipediaFinder():
+class WikipediaFinder:
     def __init__(self, target):
         if target is None:
             self.target = ''

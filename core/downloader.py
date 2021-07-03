@@ -39,18 +39,28 @@ class Downloader:
         else:
             raise Exception('wrong filename type')
 
-    def download(self):
-        mk_update_dir()
-
-        def file_write(data):
-            file.write(data)
+    def login(self):
         try:
             # Download files by ftp protocol in certain thread.
             self.ftp = ftplib.FTP(self.server)
             # Anonymous login.
             self.ftp.login()
             self.ftp.cwd('Released_files')
-            #file_size = ftp.size(self.filename.zip)
+        except Exception as e:
+            print('Failed to download from ftp server.', e)
+            print('Abort program')
+            raise
+
+    def get_size(self):
+        self.ftp.voidcmd('TYPE I')
+        return self.ftp.size(self.filename.zip)
+
+    def download(self):
+        mk_update_dir()
+
+        def file_write(data):
+            file.write(data)
+        try:
             # Download files to temp_dir.
             file = open(os.path.join(TEMP_UPDATE_DIR, self.filename.zip), 'wb')
             self.ftp.retrbinary('RETR ' + self.filename.zip, file_write)
@@ -60,7 +70,9 @@ class Downloader:
             print('Abort program')
             raise
             # There must be new window alarm for exceptions.
-        else:
+
+    def __del__(self):
+        if self.ftp is not None:
             self.ftp.close()
 
     def abort_ftp_download(self):

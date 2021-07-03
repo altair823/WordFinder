@@ -2,30 +2,25 @@ import os
 import shutil
 import platform
 from zipfile import ZipFile
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
+from PyQt5.QtCore import QObject, pyqtSignal, QThread, QRunnable, pyqtSlot
 
 from core.declaration import IS_THIS_TEST
 from core.downloader import Downloader, rm_update_dir
 from core.file_extension import FileName
 
 
-class update_worker(QThread):
-    def __init__(self, filename_without_extension):
-        super(update_worker, self).__init__()
-        self.filename_without_extension = filename_without_extension
-    def run(self):
-        worker = Updater(self.filename_without_extension)
-
-
-
-
-class Updater(QThread):
+class _UpdaterSignal(QObject):
     finished = pyqtSignal()
-    progress = pyqtSignal(int)
+    total_size = pyqtSignal(int)
+
+
+class Updater(QRunnable):
 
     # The given filename must be without extension.
     def __init__(self, filename_without_extension):
         super().__init__()
+        self.signal = _UpdaterSignal()
+
         self.server = None
         self.filename = FileName(filename_without_extension)
         self.downloader = None
@@ -43,7 +38,11 @@ class Updater(QThread):
             self.downloader = Downloader()
             self.downloader.setServer(self.server)
             self.downloader.setFilename(self.filename)
+            self.downloader.login()
+            total_size = self.downloader.get_size()
+            self.signal.total_size.emit(total_size)
             self.downloader.download()
+            del self.downloader
         # If update sequence cannot be executed,
         except Exception as e:
             raise
@@ -86,6 +85,7 @@ class Updater(QThread):
         else:
             print('테스트 환경입니다.')
 
+    @pyqtSlot()
     def run(self):
         self.update()
-        self.finished.emit()
+        self.signal.finished.emit()
