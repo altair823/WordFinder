@@ -37,8 +37,9 @@ class VersionComparator:
             return 1
         for current, target in zip_longest(self.current.version, self.target.version):
             # if current version is newer
-            if target is None or (current is not None and current >= target):
+            if target is None or (current is not None and current > target):
                 return -1
             # if target version is newer
             elif current is None or (target is not None and current < target):
                 return 1
+        return -1
