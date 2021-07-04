@@ -14,6 +14,7 @@ class _UpdaterSignal(QObject):
     total_size = pyqtSignal(int)
 
 
+# Class based on QThread for updating.
 class Updater(QRunnable):
 
     # The given filename must be without extension.

@@ -1,12 +1,8 @@
-# This file violate the Dependency Inversion Principle,
-# because other modules depend on this module.
-
-
-# Temporary directory that will contains downloaded files which is replaced the original files.
-# And the old files will moving this temp_dir.
+# 서버의 주소나 프로그램 버전과 같은 정보들을 담은 파일입니다.
+# 보안의 위험이 있으므로 되도록 배포하지 않는 것이 좋습니다.
 import os
 
-CURRENT_VERSION = '0.5'
+CURRENT_VERSION = '0.5.1'
 RELEASED_FILE_DIR = 'Released_files'  # in ftp server.
 
 _current_main_dir = os.getcwd()

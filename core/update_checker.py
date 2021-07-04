@@ -23,13 +23,13 @@ class UpdateChecker:
             if 'v#' in i[0]:
                 target_version_str = i[0][2:]
                 return target_version_str
+        # If there is no update file, it means that the supporting is ended.
+        # So return version number '0' to update nothing.
+        return '0'
 
-    def get_current_version(self):
-        return CURRENT_VERSION
-
-    # If the update is needed, return True, and in the other else cases return False.
+    # If the update is needed, return True.
     def check(self):
-        if VersionComparator(self.get_current_version(), self.get_target_version()).compare() == 1:
+        if VersionComparator(CURRENT_VERSION, self.get_target_version()).compare() == 1:
             return True
         else:
             return False

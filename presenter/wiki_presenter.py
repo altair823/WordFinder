@@ -1,7 +1,7 @@
+# Presenter for wikipedia result page's html.
 from bs4 import BeautifulSoup
 
 import presenter.word_presenter_interface
-from scraper.wikipedia import WikipediaFinder
 
 
 class WikiPresenter(presenter.word_presenter_interface.WordPresenter):

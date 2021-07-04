@@ -1,7 +1,7 @@
 from time import sleep
 
 
-from gui.total_gui import FinderGUI
+from gui.main_window_gui import FinderGUI
 #from gui.total_gui_test import FinderGUI
 from PyQt5.QtWidgets import QApplication
 import sys
