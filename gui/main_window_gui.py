@@ -1,19 +1,14 @@
 # 메인 윈도우를 구현하는 파일입니다.
-
-import sys
 import webbrowser
 
 from PyQt5.QtCore import QThreadPool
 from PyQt5.QtWidgets import *
 
 from gui.update_window_gui import Updater_GUI
-from presenter import naver_presenter, wiki_presenter
-from gui import thread_finder
+from multithread import wiki_thread_finder, naver_thread_finder
 from resource.main_window import Ui_MainWindow
 from core import update_checker
 from core.declaration import *
-from scraper import naver_dict, wikipedia
-
 
 finder = Ui_MainWindow
 
@@ -56,19 +51,14 @@ class FinderGUI(QMainWindow, finder):
         self.search_bar.clear()
 
         # 네이버 사전 탐색
-        naver_finder = thread_finder.ThreadFinder()
-        naver_finder.set_target(self.target)
-        naver_finder.set_finder(naver_dict.NaverDictFinder(self.target))
-        naver_finder.set_presenter(naver_presenter.NaverPresenter())
+        naver_finder = naver_thread_finder.NaverThreadFinder(self.target)
         naver_finder.signals.result.connect(self.set_naverDict_mean)
 
         # 위키백과 탐색
-        wiki_finder = thread_finder.ThreadFinder()
-        wiki_finder.set_target(self.target)
-        wiki_finder.set_finder(wikipedia.WikipediaFinder(self.target))
-        wiki_finder.set_presenter(wiki_presenter.WikiPresenter())
+        wiki_finder = wiki_thread_finder.WikiThreadFinder(self.target)
         wiki_finder.signals.result.connect(self.set_wiki_mean)
 
+        # Start thread
         self.threadpool.start(naver_finder)
         self.threadpool.start(wiki_finder)
 
