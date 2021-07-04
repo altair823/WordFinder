@@ -2,7 +2,7 @@
 # 보안의 위험이 있으므로 되도록 배포하지 않는 것이 좋습니다.
 import os
 
-CURRENT_VERSION = '0.5.1'
+CURRENT_VERSION = '0.5.1.1'
 RELEASED_FILE_DIR = 'Released_files'  # in ftp server.
 
 _current_main_dir = os.getcwd()

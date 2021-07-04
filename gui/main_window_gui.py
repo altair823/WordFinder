@@ -61,7 +61,6 @@ class FinderGUI(QMainWindow, finder):
         naver_finder.set_finder(naver_dict.NaverDictFinder(self.target))
         naver_finder.set_presenter(naver_presenter.NaverPresenter())
         naver_finder.signals.result.connect(self.set_naverDict_mean)
-        self.threadpool.start(naver_finder)
 
         # 위키백과 탐색
         wiki_finder = thread_finder.ThreadFinder()
@@ -69,6 +68,8 @@ class FinderGUI(QMainWindow, finder):
         wiki_finder.set_finder(wikipedia.WikipediaFinder(self.target))
         wiki_finder.set_presenter(wiki_presenter.WikiPresenter())
         wiki_finder.signals.result.connect(self.set_wiki_mean)
+
+        self.threadpool.start(naver_finder)
         self.threadpool.start(wiki_finder)
 
     def go_naver_page(self):
