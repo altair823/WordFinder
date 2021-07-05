@@ -67,7 +67,6 @@ class Downloader:
             file.close()
         except Exception as e:
             print('Failed to download from ftp server.', e)
-            print('Abort program')
             raise
             # There must be new window alarm for exceptions.
 

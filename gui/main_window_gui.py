@@ -20,6 +20,8 @@ class FinderGUI(QMainWindow, finder):
         self.setWindowTitle('Word Finder')
 
         self.menu_info_update.triggered.connect(self.update)
+        self.menu_info_program_ver.triggered.connect(self.show_version)
+        self.menu_info_help
 
         self.target = ''
         self.naver_url = ''
@@ -75,3 +77,10 @@ class FinderGUI(QMainWindow, finder):
             return
         updater_g = Updater_GUI(self, 'WordFinder')
         updater_g.show()
+
+    def show_version(self):
+        version_window = QMessageBox(self)
+        version_window.setWindowTitle('About')
+        version_window.setIcon(QMessageBox.Information)
+        version_window.setText('Currnet version is ' + CURRENT_VERSION)
+        version_window.exec_()
