@@ -93,7 +93,7 @@ class FinderGUI(QMainWindow, Ui_MainWindow):
     def update(self):
         # 현재 버전과 서버의 버전을 체크하고 필요할 경우에만 업데이트.
         if update_checker.UpdateChecker(RELEASED_FILE_DIR).check() is False:
-            print('don\'t needed!')
+            QMessageBox.information(self, '업데이트', '가능한 업데이트가 없습니다.')
             return
         updater_g = UpdaterGUI(self, 'WordFinder')
         updater_g.show()

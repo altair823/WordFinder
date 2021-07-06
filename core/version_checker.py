@@ -33,8 +33,8 @@ class VersionComparator:
     # Return 0 when two versions are same.
     def compare(self):
         # For the test.
-        if IS_THIS_TEST:
-            return 1
+        #if IS_THIS_TEST:
+            #return 1
         for current, target in zip_longest(self.current.version, self.target.version):
             # if current version is newer
             if target is None or (current is not None and current > target):
