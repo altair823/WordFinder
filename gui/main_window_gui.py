@@ -4,24 +4,27 @@ import webbrowser
 from PyQt5.QtCore import QThreadPool
 from PyQt5.QtWidgets import *
 
-from gui.update_window_gui import Updater_GUI
+from gui.update_window_gui import UpdaterGUI
+from gui.help_window_gui import HelpWindow
 from multithread import wiki_thread_finder, naver_thread_finder
 from resource.main_window import Ui_MainWindow
-from core import update_checker
+from core import update_checker, file_manage
 from core.declaration import *
 
-finder = Ui_MainWindow
 
 
-class FinderGUI(QMainWindow, finder):
+class FinderGUI(QMainWindow, Ui_MainWindow):
     def __init__(self) :
         super().__init__()
         self.setupUi(self)
         self.setWindowTitle('Word Finder')
 
+        self.menu_file_save.triggered.connect(self.save_file)
+        self.menu_file_open.triggered.connect(self.open_file)
+
         self.menu_info_update.triggered.connect(self.update)
         self.menu_info_program_ver.triggered.connect(self.show_version)
-        self.menu_info_help
+        self.menu_info_help.triggered.connect(self.show_help)
 
         self.target = ''
         self.naver_url = ''
@@ -70,12 +73,29 @@ class FinderGUI(QMainWindow, finder):
     def go_wiki_page(self):
         webbrowser.open(self.wiki_url)
 
+    # Save current search result by text file.
+    def save_file(self):
+        filename, _ = QFileDialog.getSaveFileName(self, '저장', '', 'Text (*.txt);;' 'All Files (*.*)')
+        if filename:
+            save_data = file_manage.FileManager()
+            save_data.add_mean('naver_dict', self.naver_result.text())
+            save_data.add_mean('wikipedia', self.wiki_result.text())
+            save_data.save_text(filename)
+
+    def open_file(self):
+        filename, _ = QFileDialog.getOpenFileName(self, '열기', '', 'Text (*.txt);;' 'All Files (*.*)')
+        if filename:
+            open_data = file_manage.FileManager()
+            data = open_data.load_text(filename)
+            self.naver_result.setText(data['naver_dict'])
+            self.wiki_result.setText(data['wikipedia'])
+
     def update(self):
         # 현재 버전과 서버의 버전을 체크하고 필요할 경우에만 업데이트.
         if update_checker.UpdateChecker(RELEASED_FILE_DIR).check() is False:
             print('don\'t needed!')
             return
-        updater_g = Updater_GUI(self, 'WordFinder')
+        updater_g = UpdaterGUI(self, 'WordFinder')
         updater_g.show()
 
     def show_version(self):
@@ -84,3 +104,8 @@ class FinderGUI(QMainWindow, finder):
         version_window.setIcon(QMessageBox.Information)
         version_window.setText('Currnet version is ' + CURRENT_VERSION)
         version_window.exec_()
+
+    def show_help(self):
+        help_g = HelpWindow(self)
+        help_g.show()
+

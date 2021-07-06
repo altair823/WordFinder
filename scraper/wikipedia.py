@@ -20,4 +20,6 @@ class WikipediaFinder(_FinderInterface):
         return self.url
 
     def get_text(self):
+        if self.request is None:
+            return ''
         return self.request.text

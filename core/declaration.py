@@ -9,6 +9,8 @@ _current_main_dir = os.getcwd()
 TEMP_UPDATE_DIR = os.path.abspath(os.path.join(os.getcwd(), 'tmp_update'))
 WORDFINDER_FTP_SERVER = '61.73.209.90'
 
+HELP_FILE = 'help.txt'
+
 
 # In the test environment, there should exist '.TEST' file.
 def is_this_test():

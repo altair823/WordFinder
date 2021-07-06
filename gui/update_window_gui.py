@@ -20,9 +20,9 @@ class check_signal(QObject):
     progress = pyqtSignal(int)
 
 
-class Updater_GUI(QDialog, updater_gui):
+class UpdaterGUI(QDialog, updater_gui):
     def __init__(self, parent, filename):
-        super(Updater_GUI, self).__init__(parent)
+        super(UpdaterGUI, self).__init__(parent)
         self.setupUi(self)
         self.setWindowTitle('Update')
         self.show()
