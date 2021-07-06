@@ -16,7 +16,7 @@ class FileManager:
 
     # For saving actual result data.
     def save_text(self, filename):
-        with open(filename, 'w') as tf:
+        with open(filename, 'w', encoding='utf-8') as tf:
             for dict_type, mean in self.mean_dict.items():
                 tf.write('\n#'+ dict_type + '#\n')
                 tf.write(mean)
@@ -26,7 +26,7 @@ class FileManager:
 
     def load_text(self, filename):
         try:
-            with open(filename, 'r') as tf:
+            with open(filename, 'r', encoding='utf-8') as tf:
                 dict_type = None
                 for line in tf:
                     if line[:1] == '#' and line[-2:] == '#\n':
