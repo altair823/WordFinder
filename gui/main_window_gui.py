@@ -1,7 +1,8 @@
 # 메인 윈도우를 구현하는 파일입니다.
 import webbrowser
 
-from PyQt5.QtCore import QThreadPool
+from PyQt5 import uic
+from PyQt5.QtCore import QThreadPool, QTimer
 from PyQt5.QtWidgets import *
 
 from gui.update_window_gui import UpdaterGUI
@@ -11,9 +12,9 @@ from resource.main_window import Ui_MainWindow
 from core import update_checker, file_manage
 from core.declaration import *
 
+temp_main_window = uic.loadUiType("resource/main_window.ui")[0]
 
-
-class FinderGUI(QMainWindow, Ui_MainWindow):
+class FinderGUI(QMainWindow, temp_main_window):
     def __init__(self) :
         super().__init__()
         self.setupUi(self)
@@ -33,9 +34,36 @@ class FinderGUI(QMainWindow, Ui_MainWindow):
         self.search_button.clicked.connect(self.search_word)
         self.naver_gopage.clicked.connect(self.go_naver_page)
         self.wiki_gopage.clicked.connect(self.go_wiki_page)
+        self.naver_frame.hide()
+        self.wiki_frame.hide()
+
+
+        self.naver_check.setText("Naver사전")
+        self.wiki_check.setText("위키백과")
+        self.naver_check.toggled.connect(self.page_check)
+        self.wiki_check.toggled.connect(self.page_check)
 
         # 각 사이트의 결과를 탐색할 스레드가 존재할 스래드풀.
         self.threadpool = QThreadPool()
+
+    def page_check(self):
+        self.minsize = 0
+        if self.naver_check.isChecked() :
+            self.naver_frame.show()
+            self.minsize = self.size
+        else:
+            self.naver_frame.hide()
+        if self.wiki_check.isChecked() :
+            self.wiki_frame.show()
+            self.minsize = self.size
+        else:
+            self.wiki_frame.hide()
+        self.adjustSize()
+        self.resize(self.minimumSize())
+
+
+    def resizeMe(self):
+        self.resize(self.minimumSizeHint())
 
     def set_naverDict_mean(self, result_dict):
         for key in result_dict.keys():
