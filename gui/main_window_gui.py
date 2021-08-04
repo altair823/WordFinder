@@ -34,12 +34,14 @@ class FinderGUI(QMainWindow, temp_main_window):
         self.search_button.clicked.connect(self.search_word)
         self.naver_gopage.clicked.connect(self.go_naver_page)
         self.wiki_gopage.clicked.connect(self.go_wiki_page)
-        self.naver_frame.hide()
-        self.wiki_frame.hide()
+        #self.naver_frame.hide()
+        #self.wiki_frame.hide()
 
 
         self.naver_check.setText("Naver사전")
         self.wiki_check.setText("위키백과")
+        self.naver_check.setChecked(True)
+        self.wiki_check.setChecked(True)
         self.naver_check.toggled.connect(self.page_check)
         self.wiki_check.toggled.connect(self.page_check)
 
@@ -47,19 +49,16 @@ class FinderGUI(QMainWindow, temp_main_window):
         self.threadpool = QThreadPool()
 
     def page_check(self):
-        self.minsize = 0
         if self.naver_check.isChecked() :
             self.naver_frame.show()
-            self.minsize = self.size
         else:
             self.naver_frame.hide()
+
         if self.wiki_check.isChecked() :
             self.wiki_frame.show()
-            self.minsize = self.size
         else:
             self.wiki_frame.hide()
-        self.adjustSize()
-        self.resize(self.minimumSize())
+        self.resize(self.main_layout.sizeHint())
 
 
     def resizeMe(self):
